@@ -23,3 +23,36 @@ anova(height_lm)
 summary(height_lm)
 
 
+# Does data satisfy the assumptions needed to conduct ANOVA? ####
+
+# get residuals
+height_resids <- resid(height_lm)
+# put residuals into shapiro wilkson normality test
+# if p-value is greater than 0.05, assume distribution of resids is normal
+shapiro.test(height_resids)
+# check equality of variances
+bartlett.test(height~fertiliser,data=alldata)
+
+plot(height_lm)
+
+# the data satifies the assumptions for ANOVA.
+
+# Fertiliser significantly affects seedling height. Technically, we  
+# cannot conclude that fertiliser A leads to significantly taller seedlings than 
+# fertilisers B and C.
+
+# Which fertilisers are driving the significant ANOVA result?
+# Can use Tukey's test
+# However, need object of class "aov" for this.
+# aov() basically conducts ANOVA in one step rather than 2.
+
+# make aov object
+(height_aov <- aov(height~fertiliser,data=alldata))
+
+# conduct Tukey test
+TukeyHSD(height_aov)
+# A and B have significantly different heights
+# A and C have significantly different heights
+# B and C do not have significantly different heights
+# THEREFORE:  A differs significantly from B and C
+
