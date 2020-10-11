@@ -56,3 +56,68 @@ TukeyHSD(height_aov)
 # B and C do not have significantly different heights
 # THEREFORE:  A differs significantly from B and C
 
+# 2. More on analyses with single categorical explanatory variable
+#    and continuous response
+
+# import data
+soils <- read.csv("C:/Users/erika/Documents/profskills/Peru_Soil_Data.csv")
+summary(soils)
+
+# check distribution of data variables
+hist(soils$Soil_pH) # left-skewed towards ph 4.0
+hist(soils$Soil_pH,breaks=10) # see in more detail
+
+# add line
+abline(v=median(soils$Soil_pH)) #median
+abline(v=mean(soils$Soil_pH))
+
+# how does continuous data vary accross discrete categorigal variables?
+# make box plot
+soils$Habitat <- as.factor(soils$Habitat)
+plot(Soil_pH ~ Habitat, data=soils)
+plot(Potassium~Habitat,data=soils)
+
+# use ANOVAs to determine if ph and p vary significantly with habitat types
+lm_pH <- lm(Soil_pH~Habitat,data=soils)
+anova(lm_pH)
+
+lm_K <- lm(Potassium~Habitat,data=soils)
+anova(lm_K)
+
+# check assuptions
+lm_pH_resids <- resid(lm_pH)
+shapiro.test(lm_pH_resids) # distribution of resids >0.05, therefore normal
+bartlett.test(Soil_pH ~Habitat,data=soils)
+
+lm_K_resids <- resid(lm_K)
+shapiro.test(lm_K_resids)
+bartlett.test(Potassium ~Habitat,data=soils)
+
+plot(lm_pH)
+plot(lm_K)
+# Potassium clearly does not have homogeneous variances across floodplain and terra firme
+
+hist(soils$Soil_pH,breaks=10)
+hist(soils$Potassium,breaks=10)
+# potassium is right-skewed
+
+plot(Soil_pH~Habitat,data=soils)
+plot(Potassium~Habitat,data=soils)
+
+# log transform potassium data, as assumptions for anova were violated
+soils$log_K <- log(soils$Potassium)
+
+# re-do analysis with log transformed k data
+lm_log_K <- lm(log_K ~Habitat,data=soils)
+anova(lm_log_K)
+
+# check residuals again to see if they conform to anova assumptions
+lm_log_K_resids <- resid(lm_K)
+shapiro.test(lm_log_K_resids)
+bartlett.test(log_K ~Habitat,data=soils)
+plot(lm_log_K)
+
+
+
+# 3. Relationships between continous variables ####
+
